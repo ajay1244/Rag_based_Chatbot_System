@@ -40,6 +40,9 @@ Question:
 Answer:
 """
 
-    response = model.generate_content(prompt)
+    try:
+        response = model.generate_content(prompt)
+        return response.text
 
-    return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"
