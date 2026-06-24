@@ -1,21 +1,36 @@
-from dotenv import load_dotenv
-import os
-import google.generativeai as genai
+from src.pdf_loader import load_pdf
+from src.chunker import create_chunks
+from src.embedder import create_embeddings, model
+from src.vector_store import build_index
+from src.rag_engine import generate_answer
 
-# Load environment variables
-load_dotenv()
+# Load PDF
+text = load_pdf("Data/rag_oops.pdf")
 
-api_key = os.getenv("GEMINI_API_KEY")
+# Create Chunks
+chunks = create_chunks(text)
 
-# Configure Gemini
-genai.configure(api_key=api_key)
+# Embeddings
+vectors = create_embeddings(chunks)
 
-# Load model
-model = genai.GenerativeModel("gemini-2.5-flash")
+# FAISS
+index = build_index(vectors)
 
-# Ask question
-response = model.generate_content(
-    "Give me 5 interview questions on Python OOP."
-)
+print(f"Total Chunks: {len(chunks)}")
 
-print(response.text)
+while True:
+
+    query = input("\nAsk Question (exit to quit): ")
+
+    if query.lower() == "exit":
+        break
+
+    answer = generate_answer(
+        query,
+        chunks,
+        index,
+        model
+    )
+
+    print("\nAnswer:\n")
+    print(answer)
