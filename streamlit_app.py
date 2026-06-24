@@ -6,6 +6,7 @@ from src.chunker import create_chunks
 from src.embedder import create_embeddings, model
 from src.vector_store import build_index
 from src.rag_engine import generate_answer
+from src.embedder import create_embeddings, model
 
 st.set_page_config(
     page_title="PDF Chatbot",
@@ -48,30 +49,26 @@ if uploaded_file:
         "Ask a question from the PDF"
     )
 
-    if st.button("Get Answer"):
+if st.button("Get Answer"):
 
-        if query:
+    if query:
 
-            try:
+        try:
 
-                with st.spinner("Generating answer..."):
+            with st.spinner("Generating answer..."):
 
-                    answer = generate_answer(
-                        query,
-                        chunks,
-                        index,
-                        model
-                    )
-
-                st.subheader("Answer")
-                st.write(answer)
-
-            except Exception as e:
-
-                st.error(
-                    "API quota exceeded. Please wait 1 minute and try again."
+                answer = generate_answer(
+                    query,
+                    chunks,
+                    index,
+                    model
                 )
 
             st.subheader("Answer")
-
             st.write(answer)
+
+        except Exception as e:
+
+            st.error(
+                f"Error: {str(e)}"
+            )
